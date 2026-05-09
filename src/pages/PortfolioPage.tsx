@@ -35,7 +35,7 @@ import { cn } from '@/lib/utils';
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 export const PortfolioPage = () => {
-  const { user, assets } = useApp();
+  const { user, assets, formatCurrency, t } = useApp();
   const navigate = useNavigate();
 
   if (!user) return null;
@@ -90,7 +90,7 @@ export const PortfolioPage = () => {
             <Wallet className="w-8 h-8" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Main Portfolio</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t('portfolio')}</h1>
             <p className="text-muted-foreground flex items-center gap-1.5">
               <Shield className="w-3 h-3" /> Encrypted Asset Management
             </p>
@@ -109,17 +109,17 @@ export const PortfolioPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <Card className="glass border-white/5 lg:col-span-1 overflow-hidden group">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-muted-foreground uppercase tracking-widest font-mono">Net Portfolio Wealth</CardTitle>
+            <CardTitle className="text-sm text-muted-foreground uppercase tracking-widest font-mono">{t('balance')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
               <h2 className="text-4xl font-bold font-mono tracking-tighter">
-                ${totalPortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {formatCurrency(totalPortfolioValue)}
               </h2>
               <div className="flex items-center gap-2">
                 <span className={`flex items-center text-sm font-bold ${totalProfitLoss >= 0 ? "text-[#00FFB2]" : "text-[#FF4D6D]"}`}>
                   {totalProfitLoss >= 0 ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
-                  ${Math.abs(totalProfitLoss).toLocaleString()} ({totalProfitLossPercentage.toFixed(2)}%)
+                  {formatCurrency(Math.abs(totalProfitLoss))} ({totalProfitLossPercentage.toFixed(2)}%)
                 </span>
                 <span className="text-xs text-muted-foreground">All-time P/L</span>
               </div>
@@ -127,7 +127,7 @@ export const PortfolioPage = () => {
             <div className="mt-8 pt-6 border-t border-white/5 flex gap-12">
               <div>
                 <p className="text-xs text-muted-foreground uppercase mb-1">Available Cash</p>
-                <p className="font-bold font-mono text-lg">${user.balance.toLocaleString()}</p>
+                <p className="font-bold font-mono text-lg">{formatCurrency(user.balance)}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground uppercase mb-1">Risk Rating</p>
@@ -244,14 +244,14 @@ export const PortfolioPage = () => {
                       </TableCell>
                       <TableCell>
                         <p className="font-bold">{p.amount.toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground">Invested: ${p.costBasis.toLocaleString()}</p>
+                        <p className="text-xs text-muted-foreground">Invested: {formatCurrency(p.costBasis)}</p>
                       </TableCell>
-                      <TableCell className="font-mono text-muted-foreground">${p.avgPrice.toFixed(2)}</TableCell>
-                      <TableCell className="font-mono">${p.asset?.price.toFixed(2)}</TableCell>
-                      <TableCell className="font-mono font-bold">${p.currentValue.toLocaleString()}</TableCell>
+                      <TableCell className="font-mono text-muted-foreground">{formatCurrency(p.avgPrice)}</TableCell>
+                      <TableCell className="font-mono">{formatCurrency(p.asset?.price || 0)}</TableCell>
+                      <TableCell className="font-mono font-bold">{formatCurrency(p.currentValue)}</TableCell>
                       <TableCell>
                         <span className={`text-sm font-bold flex items-center ${p.profitLoss >= 0 ? "text-[#00FFB2]" : "text-[#FF4D6D]"}`}>
-                          {p.profitLoss >= 0 ? '+' : '-'}${Math.abs(p.profitLoss).toLocaleString()} ({p.profitLossPercentage.toFixed(2)}%)
+                          {p.profitLoss >= 0 ? '+' : '-'}{formatCurrency(Math.abs(p.profitLoss))} ({p.profitLossPercentage.toFixed(2)}%)
                         </span>
                       </TableCell>
                       <TableCell className="pr-6 text-right">
