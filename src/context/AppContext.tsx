@@ -25,6 +25,12 @@ interface AppContextType {
   toggleWatchlist: (assetId: string) => void;
   updateProfile: (data: Partial<User>) => void;
   markNotificationAsRead: (id: string) => void;
+  language: 'en' | 'hi' | 'es' | 'fr';
+  currency: 'USD' | 'INR' | 'EUR' | 'GBP';
+  setLanguage: (lang: 'en' | 'hi' | 'es' | 'fr') => void;
+  setCurrency: (cur: 'USD' | 'INR' | 'EUR' | 'GBP') => void;
+  formatCurrency: (amount: number) => string;
+  t: (key: string) => string;
   isLoading: boolean;
 }
 
@@ -44,6 +50,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('tradex_theme');
     return (saved as 'dark' | 'light') || 'dark';
+  });
+
+  const [language, setLanguageState] = useState<'en' | 'hi' | 'es' | 'fr'>(() => {
+    const saved = localStorage.getItem('tradex_language');
+    return (saved as any) || 'en';
+  });
+
+  const [currency, setCurrencyState] = useState<'USD' | 'INR' | 'EUR' | 'GBP'>(() => {
+    const saved = localStorage.getItem('tradex_currency');
+    return (saved as any) || 'USD';
   });
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -70,6 +86,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       document.documentElement.classList.remove('dark');
     }
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('tradex_language', language);
+  }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('tradex_currency', currency);
+  }, [currency]);
 
   // Market Simulation and Random Notifications
   useEffect(() => {
@@ -119,6 +143,110 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     return () => clearInterval(interval);
   }, []);
+
+  const setLanguage = useCallback((lang: 'en' | 'hi' | 'es' | 'fr') => {
+    setLanguageState(lang);
+  }, []);
+
+  const setCurrency = useCallback((cur: 'USD' | 'INR' | 'EUR' | 'GBP') => {
+    setCurrencyState(cur);
+  }, []);
+
+  const exchangeRates = {
+    USD: 1,
+    INR: 83.31,
+    EUR: 0.93,
+    GBP: 0.80
+  };
+
+  const currencySymbols = {
+    USD: '$',
+    INR: '₹',
+    EUR: '€',
+    GBP: '£'
+  };
+
+  const formatCurrency = useCallback((amount: number) => {
+    const rate = exchangeRates[currency];
+    const converted = amount * rate;
+    const symbol = currencySymbols[currency];
+    
+    return `${symbol}${converted.toLocaleString(undefined, { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 2 
+    })}`;
+  }, [currency]);
+
+  const translations: Record<string, Record<string, string>> = {
+    en: {
+      dashboard: 'Dashboard',
+      markets: 'Markets',
+      portfolio: 'Portfolio',
+      orders: 'Orders',
+      settings: 'Settings',
+      pro_insights: 'Pro Insights',
+      deposit: 'Deposit',
+      withdraw: 'Withdraw',
+      buy: 'Buy',
+      sell: 'Sell',
+      watchlist: 'Watchlist',
+      balance: 'Portfolio Balance',
+      language: 'Language',
+      currency: 'Currency'
+    },
+    hi: {
+      dashboard: 'डैशबोर्ड',
+      markets: 'बाजार',
+      portfolio: 'पोर्टफोलियो',
+      orders: 'ऑर्डर',
+      settings: 'सेटिंग्स',
+      pro_insights: 'प्रो इनसाइट्स',
+      deposit: 'जमा करें',
+      withdraw: 'निकालें',
+      buy: 'खरीदें',
+      sell: 'बेचें',
+      watchlist: 'वॉचलिस्ट',
+      balance: 'पोर्टफोलियो बैलेंस',
+      language: 'भाषा',
+      currency: 'मुद्रा'
+    },
+    es: {
+      dashboard: 'Tablero',
+      markets: 'Mercados',
+      portfolio: 'Portafolio',
+      orders: 'Órdenes',
+      settings: 'Ajustes',
+      pro_insights: 'Perspectivas Pro',
+      deposit: 'Depositar',
+      withdraw: 'Retirar',
+      buy: 'Comprar',
+      sell: 'Vender',
+      watchlist: 'Lista de seguimiento',
+      balance: 'Saldo del portafolio',
+      language: 'Idioma',
+      currency: 'Moneda'
+    },
+    fr: {
+      dashboard: 'Tableau de bord',
+      markets: 'Marchés',
+      portfolio: 'Portefeuille',
+      orders: 'Commandes',
+      settings: 'Paramètres',
+      pro_insights: 'Aperçus Pro',
+      deposit: 'Dépôt',
+      withdraw: 'Retirer',
+      buy: 'Acheter',
+      sell: 'Vendre',
+      watchlist: 'Liste de surveillance',
+      balance: 'Solde du portefeuille',
+      language: 'Langue',
+      currency: 'Devise'
+    }
+  };
+
+  const t = useCallback((key: string) => {
+    return translations[language][key] || key;
+  }, [language]);
 
   const toggleTheme = useCallback(() => {
     setTheme(prev => prev === 'dark' ? 'light' : 'dark');
@@ -280,6 +408,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       user, 
       theme, 
       notifications,
+      language,
+      currency,
+      setLanguage,
+      setCurrency,
+      formatCurrency,
+      t,
       toggleTheme, 
       login, 
       logout, 
