@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils';
 const SettingItem = ({ icon: Icon, title, description, children }: any) => (
   <div className="flex items-center justify-between py-6 border-b border-white/5 last:border-0 group">
     <div className="flex items-start gap-4">
-      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+      <div className="min-w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
         <Icon className="w-5 h-5 transition-transform group-hover:scale-110" />
       </div>
       <div>
@@ -37,12 +37,24 @@ const SettingItem = ({ icon: Icon, title, description, children }: any) => (
         <p className="text-xs text-muted-foreground max-w-xs">{description}</p>
       </div>
     </div>
-    {children}
+    <div className="ml-4">
+      {children}
+    </div>
   </div>
 );
 
 export const SettingsPage = () => {
-  const { user, theme, toggleTheme, updateProfile } = useApp();
+  const { 
+    user, 
+    theme, 
+    toggleTheme, 
+    updateProfile, 
+    language, 
+    currency, 
+    setLanguage, 
+    setCurrency,
+    t 
+  } = useApp();
   const [isEditing, setIsEditing] = React.useState(false);
   const [formData, setFormData] = React.useState({
     name: user?.name || '',
@@ -54,6 +66,20 @@ export const SettingsPage = () => {
     setIsEditing(false);
   };
 
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'hi', name: 'हिन्दी (Hindi)', flag: '🇮🇳' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  ];
+
+  const currencies = [
+    { code: 'USD', name: 'US Dollar', symbol: '$' },
+    { code: 'INR', name: 'Indian Rupee', symbol: '₹' },
+    { code: 'EUR', name: 'Euro', symbol: '€' },
+    { code: 'GBP', name: 'British Pound', symbol: '£' },
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
@@ -61,7 +87,7 @@ export const SettingsPage = () => {
       className="space-y-8 max-w-5xl mx-auto"
     >
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">System Settings</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('settings')}</h1>
         <p className="text-muted-foreground mt-1">Manage your terminal configuration and personal preferences.</p>
       </div>
 
@@ -159,6 +185,58 @@ export const SettingsPage = () => {
               </SettingItem>
               
               <SettingItem 
+                icon={Globe} 
+                title={t('language')} 
+                description="Select your preferred language for the terminal interface."
+              >
+                <div className="flex flex-wrap gap-2">
+                  {languages.map((lang) => (
+                    <Button 
+                      key={lang.code}
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setLanguage(lang.code as any)}
+                      className={cn(
+                        "rounded-lg h-9 px-3 border-white/5 transition-all",
+                        language === lang.code 
+                          ? "bg-primary/20 text-primary border-primary/30" 
+                          : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                      )}
+                    >
+                      <span className="mr-1.5">{lang.flag}</span>
+                      {lang.name}
+                    </Button>
+                  ))}
+                </div>
+              </SettingItem>
+
+              <SettingItem 
+                icon={CreditCard} 
+                title={t('currency')} 
+                description="Base currency for balance, prices and trade calculations."
+              >
+                <div className="flex flex-wrap gap-2">
+                  {currencies.map((cur) => (
+                    <Button 
+                      key={cur.code}
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setCurrency(cur.code as any)}
+                      className={cn(
+                        "rounded-lg h-9 px-3 border-white/5 transition-all font-mono",
+                        currency === cur.code 
+                          ? "bg-primary/20 text-primary border-primary/30" 
+                          : "bg-white/5 text-muted-foreground hover:bg-white/10"
+                      )}
+                    >
+                      <span className="font-bold mr-1">{cur.symbol}</span>
+                      {cur.code}
+                    </Button>
+                  ))}
+                </div>
+              </SettingItem>
+
+              <SettingItem 
                 icon={Eye} 
                 title="Privacy Mode" 
                 description="Conceal portfolio balances and sensitive data from the main interface."
@@ -201,30 +279,6 @@ export const SettingsPage = () => {
                 </div>
               </SettingItem>
             </CardContent>
-          </Card>
-
-          <Card className="glass border-white/5">
-             <CardHeader className="border-b border-white/5">
-               <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                 <Globe className="w-5 h-5" /> Localisation
-               </CardTitle>
-             </CardHeader>
-             <CardContent className="pt-6">
-                <div className="grid grid-cols-2 gap-4">
-                   <div className="space-y-2">
-                      <Label className="text-[10px] text-muted-foreground uppercase font-mono">Currency</Label>
-                      <Button variant="outline" className="w-full justify-between rounded-xl border-white/5 bg-white/5 h-11 px-4">
-                         USD ($) <ChevronRight className="w-4 h-4 ml-auto opacity-50" />
-                      </Button>
-                   </div>
-                   <div className="space-y-2">
-                      <Label className="text-[10px] text-muted-foreground uppercase font-mono">Language</Label>
-                      <Button variant="outline" className="w-full justify-between rounded-xl border-white/5 bg-white/5 h-11 px-4">
-                         English (US) <ChevronRight className="w-4 h-4 ml-auto opacity-50" />
-                      </Button>
-                   </div>
-                </div>
-             </CardContent>
           </Card>
 
           <div className="pt-4 flex flex-col md:flex-row gap-4 items-center justify-between text-muted-foreground text-xs font-mono">
