@@ -43,7 +43,7 @@ const CompactSparkline = ({ data, color }: { data: number[], color: string }) =>
 };
 
 export const MarketsPage = () => {
-  const { assets, user, toggleWatchlist } = useApp();
+  const { assets, user, toggleWatchlist, formatCurrency } = useApp();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<'all' | 'crypto' | 'stock'>('all');
@@ -157,7 +157,7 @@ export const MarketsPage = () => {
                     </div>
                   </TableCell>
                   <TableCell className="font-mono font-bold">
-                    ${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatCurrency(asset.price)}
                   </TableCell>
                   <TableCell>
                     <div className={cn("inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold font-mono", asset.change24h >= 0 ? "text-[#00FFB2] bg-[#00FFB2]/10" : "text-[#FF4D6D] bg-[#FF4D6D]/10")}>
