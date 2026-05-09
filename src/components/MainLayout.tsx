@@ -109,21 +109,23 @@ const SidebarLink = ({ to, icon: Icon, label, collapsed }: any) => (
   </NavLink>
 );
 
-const NavItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/markets', icon: BarChart3, label: 'Markets' },
-  { to: '/portfolio', icon: Wallet, label: 'Portfolio' },
-  { to: '/orders', icon: Clock, label: 'Orders' },
-  { to: '/notifications', icon: Bell, label: 'Notifications' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
+const NavItems = (t: any) => [
+  { to: '/dashboard', icon: LayoutDashboard, label: t('dashboard') },
+  { to: '/markets', icon: BarChart3, label: t('markets') },
+  { to: '/portfolio', icon: Wallet, label: t('portfolio') },
+  { to: '/orders', icon: Clock, label: t('orders') },
+  { to: '/notifications', icon: Bell, label: t('notifications') },
+  { to: '/pro-insights', icon: LayoutDashboard, label: t('pro_insights') },
+  { to: '/settings', icon: Settings, label: t('settings') },
 ];
 
 export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = React.useState(false);
-  const { theme, toggleTheme, logout, user, assets, updateWatchlist, notifications, markNotificationAsRead } = useApp();
+  const { theme, toggleTheme, logout, user, assets, updateWatchlist, notifications, markNotificationAsRead, t, formatCurrency } = useApp();
   const navigate = useNavigate();
+  const items = NavItems(t);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -163,7 +165,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
       <motion.aside
         initial={false}
         animate={{ width: isCollapsed ? 80 : 260 }}
-        className="hidden md:flex flex-col border-r border-white/5 bg-sidebar relative z-40"
+        className="hidden md:flex flex-col border-r border-white/5 bg-sidebar relative z-40 h-screen"
       >
         <div className="p-6 flex items-center justify-between">
           {!isCollapsed && (
@@ -185,9 +187,9 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           )}
         </div>
 
-        <ScrollArea className="flex-1 px-3">
+        <ScrollArea className="flex-1 px-3 min-h-0">
           <nav className="space-y-1 py-4">
-            {NavItems.map((item) => (
+            {items.map((item) => (
               <SidebarLink 
                 key={item.to} 
                 to={item.to} 
@@ -278,39 +280,41 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 className="fixed top-0 left-0 bottom-0 w-[280px] bg-sidebar z-[80] md:hidden shadow-2xl flex flex-col pt-20"
               >
-                <div className="px-6 py-4 space-y-2">
-                  {NavItems.map((item) => (
-                    <SidebarLink 
-                      key={item.to} 
-                      to={item.to} 
-                      icon={item.icon} 
-                      label={item.label} 
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    />
-                  ))}
-                </div>
-                <div className="mt-8 px-6">
-                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-4 px-3">Watchlist</p>
-                   <div className="space-y-1">
-                      {watchlistAssets.map((asset: any) => (
-                        <div 
-                          key={asset.id} 
-                          className="flex items-center justify-between p-3 rounded-xl bg-white/5"
-                          onClick={() => {
-                            navigate(`/markets/${asset.id}`);
-                            setIsMobileMenuOpen(false);
-                          }}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="text-xs font-bold">{asset.symbol}</div>
+                <ScrollArea className="flex-1">
+                  <div className="px-6 py-4 space-y-2">
+                    {items.map((item) => (
+                      <SidebarLink 
+                        key={item.to} 
+                        to={item.to} 
+                        icon={item.icon} 
+                        label={item.label} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-8 px-6 pb-20">
+                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-4 px-3">Watchlist</p>
+                     <div className="space-y-1">
+                        {watchlistAssets.map((asset: any) => (
+                          <div 
+                            key={asset.id} 
+                            className="flex items-center justify-between p-3 rounded-xl bg-white/5"
+                            onClick={() => {
+                              navigate(`/markets/${asset.id}`);
+                              setIsMobileMenuOpen(false);
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="text-xs font-bold">{asset.symbol}</div>
+                            </div>
+                            <div className={cn("text-xs font-bold", asset.change24h >= 0 ? "text-[#00FFB2]" : "text-[#FF4D6D]")}>
+                              {asset.change24h}%
+                            </div>
                           </div>
-                          <div className={cn("text-xs font-bold", asset.change24h >= 0 ? "text-[#00FFB2]" : "text-[#FF4D6D]")}>
-                            {asset.change24h}%
-                          </div>
-                        </div>
-                      ))}
-                   </div>
-                </div>
+                        ))}
+                     </div>
+                  </div>
+                </ScrollArea>
                 <div className="mt-auto p-6 border-t border-white/5">
                    <Button variant="ghost" className="w-full justify-start gap-4 text-destructive" onClick={handleLogout}>
                       <LogOut className="w-5 h-5" /> Sign Out
@@ -328,11 +332,11 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
               {[...Array(5)].map((_, i) => (
                 <span key={i} className="mx-6 text-[11px] font-mono text-[#94A3B8] uppercase flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00FFB2] shadow-[0_0_8px_#00FFB2]" />
-                  BTC/USD 64,520.40 <span className="text-[#00FFB2]">+1.24%</span>
+                  BTC/USD {formatCurrency(64520.40)} <span className="text-[#00FFB2]">+1.24%</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] shadow-[0_0_8px_#FF4D6D] ml-2" />
-                  ETH/USD 3,420.10 <span className="text-[#FF4D6D]">-0.42%</span>
+                  ETH/USD {formatCurrency(3420.10)} <span className="text-[#FF4D6D]">-0.42%</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-accent-blue shadow-[0_0_8px_#3B82F6] ml-2" />
-                  SOL/USD 142.50 <span className="text-accent-blue">+4.12%</span>
+                  SOL/USD {formatCurrency(142.50)} <span className="text-accent-blue">+4.12%</span>
                 </span>
               ))}
             </div>
@@ -430,7 +434,7 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
         {/* Mobile Bottom Nav */}
         <nav className="md:hidden fixed bottom-6 left-4 right-4 h-16 bg-card/80 backdrop-blur-2xl border border-border/50 rounded-2xl flex items-center justify-around px-4 shadow-2xl shadow-black/20 z-50">
-          {NavItems.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
