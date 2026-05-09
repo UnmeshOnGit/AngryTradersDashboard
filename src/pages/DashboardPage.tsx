@@ -69,7 +69,7 @@ const StatCard = ({ title, value, change, icon: Icon, color }: any) => (
 );
 
 export const DashboardPage = () => {
-  const { assets, user, isLoading, toggleWatchlist, updateProfile } = useApp();
+  const { assets, user, isLoading, toggleWatchlist, updateProfile, formatCurrency, t } = useApp();
   const navigate = useNavigate();
   const [isDepositOpen, setIsDepositOpen] = React.useState(false);
   const [depositAmount, setDepositAmount] = React.useState('1000');
@@ -178,7 +178,7 @@ export const DashboardPage = () => {
                         <Wallet className="w-6 h-6 text-primary" />
                         <div>
                           <p className="text-xs text-muted-foreground uppercase tracking-wider font-bold">Current Balance</p>
-                          <p className="text-xl font-black text-foreground font-mono">${user?.balance.toLocaleString()}</p>
+                          <p className="text-xl font-black text-foreground font-mono">{formatCurrency(user?.balance || 0)}</p>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -210,21 +210,21 @@ export const DashboardPage = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard 
           title="Total Net Worth" 
-          value={`$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`} 
+          value={formatCurrency(totalValue)} 
           change={2.4} 
           icon={BarChart3} 
           color="primary" 
         />
         <StatCard 
           title="Profit / Loss" 
-          value={`${totalProfitLoss >= 0 ? '+' : ''}$${Math.abs(totalProfitLoss).toLocaleString(undefined, { minimumFractionDigits: 2 })}`} 
+          value={formatCurrency(totalProfitLoss)} 
           change={plPercentage.toFixed(2)} 
           icon={TrendingUp} 
           color={totalProfitLoss >= 0 ? "green-500" : "red-500"} 
         />
         <StatCard 
-          title="Available Balance" 
-          value={`$${totalBalance.toLocaleString()}`} 
+          title={t('balance')} 
+          value={formatCurrency(totalBalance)} 
           change={0} 
           icon={Zap} 
           color="blue-500" 
@@ -278,7 +278,7 @@ export const DashboardPage = () => {
                       </div>
                     </TableCell>
                     <TableCell className="font-mono font-bold">
-                      ${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatCurrency(asset.price)}
                     </TableCell>
                     <TableCell>
                       <span className={cn("flex items-center font-bold text-sm", asset.change24h >= 0 ? "text-[#00FFB2]" : "text-[#FF4D6D]")}>
@@ -344,7 +344,7 @@ export const DashboardPage = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-[#00FFB2]">+{asset.change24h}%</p>
-                    <p className="text-xs font-mono text-muted-foreground">${asset.price.toFixed(2)}</p>
+                    <p className="text-xs font-mono text-muted-foreground">{formatCurrency(asset.price)}</p>
                   </div>
                 </div>
               ))}
