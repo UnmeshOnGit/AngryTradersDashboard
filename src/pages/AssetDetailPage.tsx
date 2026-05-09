@@ -72,7 +72,7 @@ import { cn } from '@/lib/utils';
 
 export const AssetDetailPage = () => {
   const { assetId } = useParams();
-  const { assets, executeTrade, user } = useApp();
+  const { assets, executeTrade, user, formatCurrency } = useApp();
   const navigate = useNavigate();
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [amount, setAmount] = useState('0');
@@ -159,7 +159,7 @@ export const AssetDetailPage = () => {
               {asset.name} <span className="text-muted-foreground text-xl font-medium">{asset.symbol}</span>
             </h1>
             <div className="flex items-center gap-4 mt-1">
-              <span className="text-2xl font-mono font-bold">${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+              <span className="text-2xl font-mono font-bold">{formatCurrency(asset.price)}</span>
               <Badge className={asset.change24h >= 0 ? "bg-[#00FFB2]/10 text-[#00FFB2] border-[#00FFB2]/20" : "bg-[#FF4D6D]/10 text-[#FF4D6D] border-[#FF4D6D]/20"}>
                 {asset.change24h >= 0 ? '+' : ''}{asset.change24h}%
               </Badge>
@@ -225,7 +225,7 @@ export const AssetDetailPage = () => {
                     tickLine={false} 
                     tick={{ fill: '#94a3b8', fontSize: 10 }}
                     orientation="right"
-                    tickFormatter={(v) => `$${v.toLocaleString()}`}
+                    tickFormatter={(v) => formatCurrency(v)}
                   />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)' }}
@@ -311,7 +311,7 @@ export const AssetDetailPage = () => {
                       </div>
                       <div className="space-y-1">
                         <p className="text-xs text-muted-foreground uppercase">All Time High</p>
-                        <p className="font-bold">${(asset.price * 1.4).toLocaleString()}</p>
+                        <p className="font-bold">{formatCurrency(asset.price * 1.4)}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -412,7 +412,7 @@ export const AssetDetailPage = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center px-1">
                     <Label className="text-xs font-mono text-muted-foreground uppercase">Amount ({asset.symbol})</Label>
-                    <span className="text-xs text-muted-foreground">Available: {tradeType === 'buy' ? `$${user?.balance.toLocaleString()}` : `${userHolding?.amount || 0} ${asset.symbol}`}</span>
+                    <span className="text-xs text-muted-foreground">Available: {tradeType === 'buy' ? formatCurrency(user?.balance || 0) : `${userHolding?.amount || 0} ${asset.symbol}`}</span>
                   </div>
                   <div className="relative">
                     <Input 
@@ -439,16 +439,16 @@ export const AssetDetailPage = () => {
                 <div className="space-y-3 p-4 bg-white/5 rounded-2xl border border-white/5">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Execution Price:</span>
-                    <span className="font-mono">${asset.price.toFixed(2)}</span>
+                    <span className="font-mono">{formatCurrency(asset.price)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Trade Fee:</span>
-                    <span className="font-mono text-primary">$0.00</span>
+                    <span className="font-mono text-primary">{formatCurrency(0)}</span>
                   </div>
                   <div className="pt-2 border-t border-white/5 flex justify-between font-bold">
                     <span>Est. Total:</span>
                     <span className={tradeType === 'buy' ? "text-[#00FFB2]" : "text-[#FF4D6D]"}>
-                      ${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatCurrency(totalCost)}
                     </span>
                   </div>
                 </div>
@@ -483,7 +483,7 @@ export const AssetDetailPage = () => {
                   <div className="flex justify-between items-end">
                     <div>
                       <p className="text-3xl font-bold font-mono">{(userHolding.amount).toLocaleString()} <span className="text-sm font-normal text-muted-foreground">{asset.symbol}</span></p>
-                      <p className="text-sm text-muted-foreground">Current Value: ${(userHolding.amount * asset.price).toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">Current Value: {formatCurrency(userHolding.amount * asset.price)}</p>
                     </div>
                     <div className="text-right">
                        <p className={cn("font-bold text-lg", (asset.price - userHolding.avgPrice) >= 0 ? "text-[#00FFB2]" : "text-[#FF4D6D]")}>
