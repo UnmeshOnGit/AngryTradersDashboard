@@ -164,7 +164,7 @@ export const LandingPage = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-accent-blue to-accent-green flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
               <BarChart3 className="w-6 h-6" />
             </div>
-            <span className={cn("transition-colors", isDark ? "text-slate-900" : "text-slate-900")}>AngryTraders</span>
+            <span className={cn("transition-colors", isDark ? "text-white" : "text-slate-900")}>AngryTraders</span>
           </div>
 
           <div className={cn(
