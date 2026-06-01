@@ -16,6 +16,15 @@
   }
 }
 
+.animate-marquee {
+  animation-play-state: running;
+}
+
+.animate-marquee:hover,
+.animate-marquee:active {
+  animation-play-state: paused !important;
+}
+
 @layer base {
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/30;
