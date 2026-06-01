@@ -328,15 +328,17 @@ export const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }
         {/* Global Market Ticker (Desktop only) */}
         <div className="hidden md:flex h-12 border-b border-white/5 bg-sidebar/50 items-center justify-between px-6 relative backdrop-blur-sm transition-all z-[60]">
            <div className="flex-1 overflow-hidden h-full flex items-center">
-             <div className="flex animate-marquee whitespace-nowrap">
+             <div className="flex animate-marquee whitespace-nowrap cursor-pointer">
               {[...Array(5)].map((_, i) => (
                 <span key={i} className="mx-6 text-[11px] font-mono text-[#94A3B8] uppercase flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00FFB2] shadow-[0_0_8px_#00FFB2]" />
                   BTC/USD {formatCurrency(64520.40)} <span className="text-[#00FFB2]">+1.24%</span>
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] shadow-[0_0_8px_#FF4D6D] ml-2" />
-                  ETH/USD {formatCurrency(3420.10)} <span className="text-[#FF4D6D]">-0.42%</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FFB2] shadow-[0_0_8px_#00FFB2] ml-2" />
+                  NIFTY 50 {formatCurrency(264.0)} <span className="text-[#00FFB2]">+0.42%</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-accent-blue shadow-[0_0_8px_#3B82F6] ml-2" />
-                  SOL/USD {formatCurrency(142.50)} <span className="text-accent-blue">+4.12%</span>
+                  SENSEX {formatCurrency(876.0)} <span className="text-accent-blue">+0.31%</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D] shadow-[0_0_8px_#FF4D6D] ml-2" />
+                  RELIANCE {formatCurrency(33.6)} <span className="text-[#FF4D6D]">-0.15%</span>
                 </span>
               ))}
             </div>
