@@ -303,7 +303,7 @@ export const LandingPage = () => {
         "relative py-8 border-y overflow-hidden whitespace-nowrap z-20 backdrop-blur-md transition-colors",
         isDark ? "bg-[#0B0F19]/50 border-white/5" : "bg-slate-50 border-slate-100 shadow-sm"
       )}>
-        <div className="flex animate-marquee">
+        <div className="flex animate-marquee cursor-pointer">
           {[...Array(4)].map((_, groupIndex) => (
             <div key={groupIndex} className="flex gap-16 px-8">
               {assets.map((asset) => (
