@@ -174,7 +174,6 @@ export const LandingPage = () => {
             <a href="#features" className="hover:text-primary transition-colors">Features</a>
             <a href="#markets" className="hover:text-primary transition-colors">Markets</a>
             <a href="#security" className="hover:text-primary transition-colors">Security</a>
-            <a href="#institution" className="hover:text-primary transition-colors">Institutional</a>
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
@@ -283,16 +282,6 @@ export const LandingPage = () => {
             >
               Enter Terminal
               <ArrowRight className="ml-2 w-7 h-7 transition-transform group-hover:translate-x-2" />
-            </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              className={cn(
-                "w-full sm:w-auto h-20 rounded-3xl px-12 text-xl font-bold transition-all hover:bg-white/5 border-2",
-                isDark ? "border-white/10 text-white" : "border-slate-100 text-slate-800 bg-slate-50/50"
-              )}
-            >
-              Institutional Suite
             </Button>
           </motion.div>
         </div>
